@@ -61,10 +61,8 @@ def evaluate(arg):
     error_rate = sum(error_rate) / dataset_size[arg.dataset][arg.split] * 100
     failure_rate = failure_count / dataset_size[arg.dataset][arg.split] * 100
 
-    print('\nEvaluating results:\n' +
-          '# AUC:          ' + str(area_under_curve) + '\n' +
-          '# Error Rate:   ' + str(error_rate) + '%\n' +
-          '# Failure Rate: ' + str(failure_rate) + '%\n')
+    print('\nEvaluating results:\n# AUC:          {:.4f}\n# Error Rate:   {:.2f}%\n# Failure Rate: {:.2f}%\n'.format(
+        area_under_curve, error_rate, failure_rate))
 
 
 if __name__ == '__main__':

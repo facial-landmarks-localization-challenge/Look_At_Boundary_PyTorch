@@ -118,11 +118,9 @@ def train(arg):
             torch.save(discrim.state_dict(), arg.save_folder + 'discrim_'+str(epoch)+'.pth')
             torch.save(regressor.state_dict(), arg.save_folder + arg.dataset+'_regressor_'+str(epoch)+'.pth')
 
-        print(
-            '\nepoch: ' + str(epoch) +
-            ' | loss_estimator: ' + str(sum_loss_estimator.item()/times_per_epoch) +
-            ' | loss_regressor: ' + str(sum_loss_regressor.item()/times_per_epoch)
-        )
+        print('\nepoch: {:0>4d} | loss_estimator: {:.2f} | loss_regressor: {:.2f}'.format(
+            epoch, sum_loss_estimator.item()/times_per_epoch, sum_loss_regressor.item()/times_per_epoch))
+
 
     torch.save(estimator.state_dict(), arg.save_folder + 'estimator_'+str(epoch)+'.pth')
     torch.save(discrim.state_dict(), arg.save_folder + 'discrim_'+str(epoch)+'.pth')
