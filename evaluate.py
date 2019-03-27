@@ -5,7 +5,7 @@ from utils import *
 
 
 def evaluate(arg):
-    devices = torch.device('cuda:0')
+    devices = torch.device('cuda:'+args.gpu_id)
     error_rate = []
     failure_count = 0
     max_threshold = arg.max_threshold
@@ -23,8 +23,8 @@ def evaluate(arg):
     print('Loading network...')
     estimator = Estimator(stacks=arg.hour_stack, msg_pass=arg.msg_pass)
     regressor = Regressor(fuse_stages=arg.fuse_stage, output=2*dataset_kp_num[arg.dataset])
-    estimator = load_weights(estimator, arg.save_folder+'estimator_'+str(arg.test_epoch)+'.pth')
-    regressor = load_weights(regressor, arg.save_folder+arg.dataset+'_regressor_'+str(arg.test_epoch)+'.pth')
+    estimator = load_weights(estimator, arg.save_folder+'estimator_'+str(arg.test_epoch)+'.pth', devices)
+    regressor = load_weights(regressor, arg.save_folder+arg.dataset+'_regressor_'+str(arg.test_epoch)+'.pth', devices)
     if arg.cuda:
         estimator = estimator.cuda(device=devices)
         regressor = regressor.cuda(device=devices)
@@ -37,7 +37,7 @@ def evaluate(arg):
             input_images, gt_keypoints, gt_heatmap, bbox, img_name = data
             error_normalize_factor = calc_normalize_factor(arg.dataset, gt_keypoints.numpy(), arg.norm_way)
             input_images = input_images.unsqueeze(1)
-            input_images = input_images.cuda()
+            input_images = input_images.cuda(device=devices)
 
             pred_heatmaps = estimator(input_images)
             pred_coords = regressor(input_images, pred_heatmaps[-1].detach()).detach().cpu()

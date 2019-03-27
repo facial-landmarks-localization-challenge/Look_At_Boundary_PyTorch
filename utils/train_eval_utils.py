@@ -37,19 +37,19 @@ def calc_d_fake(dataset, pred_coords, gt_coords, bcsize, bcsize_set):
     return dfake
 
 
-def get_devices_list(args):
+def get_devices_list(arg):
     devices_list = [torch.device('cpu')]
-    if args.cuda:
+    if arg.cuda:
         devices_list = []
-        for dev in args.gpu_id.split(','):
+        for dev in arg.gpu_id.split(','):
             devices_list.append(torch.device('cuda:'+dev))
         cudnn.benchmark = True
         cudnn.enabled = True
     return devices_list
 
 
-def load_weights(net, pth_file):
-    state_dict = torch.load(pth_file)
+def load_weights(net, pth_file, device):
+    state_dict = torch.load(pth_file, map_location=device)
     # create new OrderedDict that does not contain `module.`
     new_state_dict = OrderedDict()
     for k, v in state_dict.items():
@@ -71,10 +71,10 @@ def create_model(args, devices_list):
     discrim = Discrim() if args.GAN else None
     
     if args.resume_epoch > 0:
-        estimator = load_weights(estimator, args.resume_folder + 'estimator_' + str(args.resume_epoch) + '.pth')
+        estimator = load_weights(estimator, args.resume_folder + 'estimator_' + str(args.resume_epoch) + '.pth', devices_list[0])
         if not args.regress_only:
-            regressor = load_weights(regressor, args.resume_folder + args.dataset+'_regressor_' + str(args.resume_epoch) + '.pth')
-            discrim = load_weights(discrim, args.resume_folder + 'discrim_' + str(args.resume_epoch) + '.pth') if args.GAN else None
+            regressor = load_weights(regressor, args.resume_folder + args.dataset+'_regressor_' + str(args.resume_epoch) + '.pth', devices_list[0])
+            discrim = load_weights(discrim, args.resume_folder + 'discrim_' + str(args.resume_epoch) + '.pth', devices_list[0]) if args.GAN else None
 
     if args.cuda:
         estimator = estimator.cuda(device=devices_list[0])
