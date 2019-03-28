@@ -22,12 +22,12 @@ def train(arg):
           '# Dataset split:      ' + arg.split + '\n' +
           '# Batchsize:          ' + str(arg.batch_size) + '\n' +
           '# Num workers:        ' + str(arg.workers) + '\n' +
-          '# PDB:                ' + str(args.PDB) + '\n' +
+          '# PDB:                ' + str(arg.PDB) + '\n' +
           '# Use GPU:            ' + str(arg.cuda) + '\n' +
-          '# Start lr:           ' + str(args.lr) + '\n' +
-          '# Max epoch:          ' + str(args.max_epoch) + '\n' +
-          '# Loss type:          ' + args.loss_type + '\n' +
-          '# Resumed model:      ' + str(args.resume_epoch > 0))
+          '# Start lr:           ' + str(arg.lr) + '\n' +
+          '# Max epoch:          ' + str(arg.max_epoch) + '\n' +
+          '# Loss type:          ' + arg.loss_type + '\n' +
+          '# Resumed model:      ' + str(arg.resume_epoch > 0))
 
     print('Creating networks...')
     estimator, regressor, discrim = create_model(arg, devices)

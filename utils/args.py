@@ -55,6 +55,7 @@ parser.add_argument('--test_epoch',    default=1200,                type=int,   
 parser.add_argument('--max_threshold', default=0.1,                 type=float, help='resume epoch for testing')
 parser.add_argument('--norm_way',      default='inter_pupil',       type=str,   choices=['inter_pupil', 'inter_ocular', 'face_size'])
 parser.add_argument('--eval_watch',    default=False,               type=bool,  help='use eval_heatmap/points(True) or not')
+parser.add_argument('--save_only',     default=True,                type=bool,  help='by eval_watch, without watch, just save pics')
 parser.add_argument('--error_thresh',  default=0.043,               type=float, help='the eval_heatmap/points threshold')
 
 args = parser.parse_args()

@@ -1,11 +1,13 @@
 import tqdm
+import time
+import numpy as np
 from dataset import GeneralDataset
 from models import *
 from utils import *
 
 
 def evaluate(arg):
-    devices = torch.device('cuda:'+args.gpu_id)
+    devices = torch.device('cuda:'+arg.gpu_id)
     error_rate = []
     failure_count = 0
     max_threshold = arg.max_threshold
@@ -32,8 +34,11 @@ def evaluate(arg):
     regressor.eval()
     print('Loading network done!\nStart testing...')
     
+    time_records = []
     with torch.no_grad():
         for data in tqdm.tqdm(dataloader):
+            start = time.time()
+
             input_images, gt_keypoints, gt_heatmap, bbox, img_name = data
             error_normalize_factor = calc_normalize_factor(arg.dataset, gt_keypoints.numpy(), arg.norm_way)
             input_images = input_images.unsqueeze(1)
@@ -43,6 +48,8 @@ def evaluate(arg):
             pred_coords = regressor(input_images, pred_heatmaps[-1].detach()).detach().cpu()
             pred_coords_map = inverse_affine(arg, pred_coords, bbox)
 
+            time_records.append(time.time() - start)
+
             error_rate_i = calc_error_rate_i(
                 arg.dataset,
                 pred_coords_map,
@@ -50,9 +57,9 @@ def evaluate(arg):
                 error_normalize_factor
             )
 
-            if args.eval_watch and error_rate_i < args.error_thresh:
-                eval_heatmap(arg, pred_heatmaps[-1], img_name, bbox, save_only=True)
-                eval_points(arg, pred_coords, img_name, bbox, save_only=True)
+            if arg.eval_watch and error_rate_i < arg.error_thresh:
+                eval_heatmap(arg, pred_heatmaps[-1], img_name, bbox, save_only=arg.save_only)
+                eval_points(arg, pred_coords, img_name, bbox, save_only=arg.save_only)
 
             failure_count = failure_count + 1 if error_rate_i > max_threshold else failure_count
             error_rate.append(error_rate_i)
@@ -63,6 +70,7 @@ def evaluate(arg):
 
     print('\nEvaluating results:\n# AUC:          {:.4f}\n# Error Rate:   {:.2f}%\n# Failure Rate: {:.2f}%\n'.format(
         area_under_curve, error_rate, failure_rate))
+    print('Average speed: {:.2f}FPS'.format(1./np.mean(np.array(time_records))))
 
 
 if __name__ == '__main__':
