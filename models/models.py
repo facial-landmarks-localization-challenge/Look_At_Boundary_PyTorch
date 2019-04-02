@@ -596,8 +596,6 @@ class Discrim(nn.Module):
         return out
 
 
-
-
 # TEST: base __init__ part
 # net = Bottleneck(128, 32)
 # hg = Hourglass(Bottleneck)

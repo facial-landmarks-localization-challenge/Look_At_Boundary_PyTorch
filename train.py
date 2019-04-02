@@ -1,10 +1,9 @@
 import os
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from models import WingLoss
+from models import WingLoss, Estimator, Regressor, Discrim
 from dataset import GeneralDataset
-from utils import args, get_devices_list, create_model, calc_d_fake
+from utils import *
 import tqdm
 
 if not os.path.exists(args.save_folder):
@@ -60,7 +59,7 @@ def train(arg):
     d_fake = (torch.zeros(arg.batch_size, 13)).cuda(device=devices[0]) if arg.GAN \
         else torch.zeros(arg.batch_size, 13)
 
-    # 演进式训练
+    # evolving training
     print('Start training...')
     for epoch in range(arg.resume_epoch, arg.max_epoch):
         times_per_epoch, sum_loss_estimator, sum_loss_regressor = 0, 0., 0.
@@ -114,19 +113,95 @@ def train(arg):
             sum_loss_regressor += loss_regressor
 
         if (epoch+1) % arg.save_interval == 0:
-            torch.save(estimator.state_dict(), arg.save_folder + 'estimator_'+str(epoch)+'.pth')
-            torch.save(discrim.state_dict(), arg.save_folder + 'discrim_'+str(epoch)+'.pth')
-            torch.save(regressor.state_dict(), arg.save_folder + arg.dataset+'_regressor_'+str(epoch)+'.pth')
+            torch.save(estimator.state_dict(), arg.save_folder + 'estimator_'+str(epoch+1)+'.pth')
+            torch.save(discrim.state_dict(), arg.save_folder + 'discrim_'+str(epoch+1)+'.pth')
+            torch.save(regressor.state_dict(), arg.save_folder + arg.dataset+'_regressor_'+str(epoch+1)+'.pth')
 
         print('\nepoch: {:0>4d} | loss_estimator: {:.2f} | loss_regressor: {:.2f}'.format(
             epoch, sum_loss_estimator.item()/times_per_epoch, sum_loss_regressor.item()/times_per_epoch))
 
+    torch.save(estimator.state_dict(), arg.save_folder + 'estimator_'+str(epoch+1)+'.pth')
+    torch.save(discrim.state_dict(), arg.save_folder + 'discrim_'+str(epoch+1)+'.pth')
+    torch.save(regressor.state_dict(), arg.save_folder + arg.dataset+'_regressor_'+str(epoch+1)+'.pth')
+    print('Training done!')
 
-    torch.save(estimator.state_dict(), arg.save_folder + 'estimator_'+str(epoch)+'.pth')
-    torch.save(discrim.state_dict(), arg.save_folder + 'discrim_'+str(epoch)+'.pth')
-    torch.save(regressor.state_dict(), arg.save_folder + arg.dataset+'_regressor_'+str(epoch)+'.pth')
+
+def train_with_gt_heatmap(arg):
+    epoch = None
+    devices = get_devices_list(arg)
+
+    print('Special training:\n# Training with ground truth heatmap ...\n\nTraining parameters:\n' +
+          '# Dataset:            ' + arg.dataset + '\n' +
+          '# Dataset split:      ' + arg.split + '\n' +
+          '# Batchsize:          ' + str(arg.batch_size) + '\n' +
+          '# Num workers:        ' + str(arg.workers) + '\n' +
+          '# PDB:                ' + str(arg.PDB) + '\n' +
+          '# Use GPU:            ' + str(arg.cuda) + '\n' +
+          '# Start lr:           ' + str(arg.lr) + '\n' +
+          '# Lr step values:     ' + str(arg.step_values) + '\n' +
+          '# Lr step gamma:      ' + str(arg.gamma) + '\n' +
+          '# Max epoch:          ' + str(arg.max_epoch) + '\n' +
+          '# Loss type:          ' + arg.loss_type + '\n' +
+          '# Resumed model:      ' + str(arg.resume_epoch > 0) + '\n' +
+          '# Resumed epoch:      ' + str(arg.resume_epoch))
+
+    print('Creating networks ...')
+    regressor = Regressor(fuse_stages=arg.fuse_stage, output=2 * dataset_kp_num[arg.dataset])
+    regressor = regressor.cuda(device=devices[0])
+    print('Creating networks done!')
+
+    optimizer_regressor = torch.optim.SGD(regressor.parameters(), lr=arg.lr, momentum=arg.momentum,
+                                          weight_decay=arg.weight_decay)
+
+    if arg.loss_type == 'L2':
+        criterion = nn.MSELoss()
+    elif arg.loss_type == 'L1':
+        criterion = nn.L1Loss()
+    elif arg.loss_type == 'smoothL1':
+        criterion = nn.SmoothL1Loss()
+    else:
+        criterion = WingLoss(w=arg.wingloss_w, epsilon=arg.wingloss_e)
+
+    print('Loading dataset...')
+    trainset = GeneralDataset(dataset=arg.dataset)
+    print('Loading dataset done!')
+
+    print('Start training...')
+    for epoch in range(arg.resume_epoch, arg.max_epoch):
+        times_per_epoch, sum_loss_regressor = 0, 0.
+        dataloader = torch.utils.data.DataLoader(trainset, batch_size=arg.batch_size, shuffle=arg.shuffle,
+                                                 num_workers=arg.workers, pin_memory=True)
+
+        if epoch in arg.step_values:
+            optimizer_regressor.param_groups[0]['lr'] *= arg.gamma
+
+        for data in dataloader:
+            times_per_epoch += 1
+            input_images, gt_keypoints, gt_heatmap = data
+            input_images = input_images.unsqueeze(1)
+            input_images = input_images.cuda(device=devices[0])
+            gt_keypoints = gt_keypoints.cuda(device=devices[0])
+            gt_heatmap = gt_heatmap.cuda(device=devices[0])
+
+            optimizer_regressor.zero_grad()
+            out = regressor(input_images, gt_heatmap)
+            loss_regressor = criterion(out, gt_keypoints)
+            loss_regressor.backward()
+            optimizer_regressor.step()
+
+            sum_loss_regressor += loss_regressor
+
+        if (epoch + 1) % arg.save_interval == 0:
+            torch.save(regressor.state_dict(), arg.save_folder + arg.dataset + '_regressor_' + str(epoch + 1) + '.pth')
+
+        print('\nepoch: {:0>4d} | loss_regressor: {:.2f}'.format(epoch, sum_loss_regressor.item() / times_per_epoch))
+
+    torch.save(regressor.state_dict(), arg.save_folder + arg.dataset + '_regressor_' + str(epoch + 1) + '.pth')
     print('Training done!')
 
 
 if __name__ == '__main__':
-    train(args)
+    if args.gthm_regress:
+        train_with_gt_heatmap(args)
+    else:
+        train(args)

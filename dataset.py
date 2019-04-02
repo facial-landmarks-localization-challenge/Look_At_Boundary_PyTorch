@@ -22,8 +22,8 @@ if __name__ == '__main__':
     import cv2
     from utils import dataset_kp_num
     use_set = '300W'
-    dataset = GeneralDataset(use_set, 'train')
-    dataloader = data.DataLoader(dataset, batch_size=1, shuffle=False, pin_memory=True)
+    datasets = GeneralDataset(use_set, 'train')
+    dataloader = data.DataLoader(datasets, batch_size=1, shuffle=False, pin_memory=True)
     print('Number of training batches per epoch: %d' % len(dataloader))
     for ddd, context in enumerate(dataloader):
         image, keypoint, _ = context

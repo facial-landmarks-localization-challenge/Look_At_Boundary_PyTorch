@@ -55,7 +55,7 @@ def load_weights(net, pth_file, device):
     for k, v in state_dict.items():
         head = k[:7]
         if head == 'module.':
-            name = k[7:] # remove `module.`
+            name = k[7:]  # remove `module.`
         else:
             name = k
         new_state_dict[name] = v
@@ -63,23 +63,26 @@ def load_weights(net, pth_file, device):
     return net
 
 
-def create_model(args, devices_list):
+def create_model(arg, devices_list):
     from models import Estimator, Discrim, Regressor
 
-    estimator = Estimator(stacks=args.hour_stack, msg_pass=args.msg_pass)
-    regressor = Regressor(fuse_stages=args.fuse_stage, output=2*dataset_kp_num[args.dataset])
-    discrim = Discrim() if args.GAN else None
+    estimator = Estimator(stacks=arg.hour_stack, msg_pass=arg.msg_pass)
+    regressor = Regressor(fuse_stages=arg.fuse_stage, output=2*dataset_kp_num[arg.dataset])
+    discrim = Discrim() if arg.GAN else None
     
-    if args.resume_epoch > 0:
-        estimator = load_weights(estimator, args.resume_folder + 'estimator_' + str(args.resume_epoch) + '.pth', devices_list[0])
-        if not args.regress_only:
-            regressor = load_weights(regressor, args.resume_folder + args.dataset+'_regressor_' + str(args.resume_epoch) + '.pth', devices_list[0])
-            discrim = load_weights(discrim, args.resume_folder + 'discrim_' + str(args.resume_epoch) + '.pth', devices_list[0]) if args.GAN else None
+    if arg.resume_epoch > 0:
+        estimator = load_weights(estimator, arg.resume_folder + 'estimator_' + str(arg.resume_epoch) + '.pth',
+                                 devices_list[0])
+        if not arg.regress_only:
+            regressor = load_weights(regressor, arg.resume_folder + arg.dataset+'_regressor_' +
+                                     str(arg.resume_epoch) + '.pth', devices_list[0])
+            discrim = load_weights(discrim, arg.resume_folder + 'discrim_' + str(arg.resume_epoch) + '.pth',
+                                   devices_list[0]) if arg.GAN else None
 
-    if args.cuda:
+    if arg.cuda:
         estimator = estimator.cuda(device=devices_list[0])
         regressor = regressor.cuda(device=devices_list[0])
-        discrim = discrim.cuda(device=devices_list[0]) if args.GAN else None
+        discrim = discrim.cuda(device=devices_list[0]) if arg.GAN else None
 
     return estimator, regressor, discrim
 
@@ -117,14 +120,14 @@ def calc_normalize_factor(dataset, gt_keypoints, normalize_way='inter_pupil'):
             return error_normalize_factor
 
 
-def inverse_affine(args, pred_coords, bbox):
+def inverse_affine(arg, pred_coords, bbox):
     import copy
     pred_coords = copy.deepcopy(pred_coords)
     pred_coords = pred_coords.squeeze().numpy()
     bbox = bbox.squeeze().numpy()
-    for i in range(dataset_kp_num[args.dataset]):
-        pred_coords[2 * i] = bbox[0] + pred_coords[2 * i]/(args.crop_size-1)*(bbox[2] - bbox[0])
-        pred_coords[2 * i + 1] = bbox[1] + pred_coords[2 * i + 1]/(args.crop_size-1)*(bbox[3] - bbox[1])
+    for i in range(dataset_kp_num[arg.dataset]):
+        pred_coords[2 * i] = bbox[0] + pred_coords[2 * i]/(arg.crop_size-1)*(bbox[2] - bbox[0])
+        pred_coords[2 * i + 1] = bbox[1] + pred_coords[2 * i + 1]/(arg.crop_size-1)*(bbox[3] - bbox[1])
     return pred_coords
 
 

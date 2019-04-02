@@ -1,6 +1,7 @@
 from .dataset_info import *
 from .args import args
 from .pdb import pdb
+from .visual import watch_pic_kp_xy
 
 import cv2
 import time
@@ -157,7 +158,7 @@ def get_random_transform_param(split, bbox):
         translation = random.randint(-translate_param, translate_param)
         # LU:0 RU:1 LL:2 RL:3
         trans_dir = random.randint(0, 3)
-        rotation = random.uniform(-args.ratote_limit, args.ratote_limit)
+        rotation = random.uniform(-args.rotate_limit, args.rotate_limit)
         scaling = random.uniform(1-args.scale_ratio, 1+args.scale_ratio)
         flip = random.randint(0, 1)
     return translation, trans_dir, rotation, scaling, flip
@@ -384,12 +385,13 @@ def getitem_from(dataset, split, annotation, eval_flag=0):
     coord_x_after_crop, coord_y_after_crop = cropped_pic_kp(dataset, crop_matrix, coord_x, coord_y, flip=flip)
 
     # 该段将原始关键点坐标转化为仿射变换后的图像上的坐标
-    gt_keypoints = get_gt_coords(dataset, coord_x_after_crop, coord_y_after_crop,
-                                 affine_mat)
+    gt_keypoints = get_gt_coords(dataset, coord_x_after_crop, coord_y_after_crop, affine_mat)
 
     # 该段根据生成的新的坐标点，将坐标转换为64*64大小图片上的坐标并绘制boundary热图
     # 若在函数最后设置watch_heatmap=1，则显示热图(需要使用pycharm的science mode)
     gt_heatmap = get_gt_heatmap(dataset, gt_keypoints, watch_heatmap=0)
+
+    # watch_pic_kp_xy(dataset, pic_crop, coord_x_after_crop, coord_y_after_crop)
 
     if eval_flag == 0:
         return pic_affine, gt_keypoints, gt_heatmap
