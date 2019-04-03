@@ -3,19 +3,19 @@ import argparse
 parser = argparse.ArgumentParser(description='LAB')
 
 # dataset
-parser.add_argument('--dataset_route', default='../../datasets_cp',
+parser.add_argument('--dataset_route', default='../../datasets',
                     type=str,   help='directory of all the facial landmark datasets')
 parser.add_argument('--dataset',       default='300W',              type=str,   help='dataset used')
 parser.add_argument('--split',         default='train',             type=str,   help='the split of dataset')
 
 # dataloader
 parser.add_argument('--crop_size',     default=256,                 type=int,   help='network input img size')
-parser.add_argument('--batch_size',    default=32,                   type=int,   help='batch size')
-parser.add_argument('--workers',       default=16,                   type=int,   
+parser.add_argument('--batch_size',    default=8,                   type=int,   help='batch size')
+parser.add_argument('--workers',       default=8,                   type=int,   
                     help='number of workers used in dataload')
 parser.add_argument('--shuffle',       default=True,                type=bool,  
                     help='dataloading shuffle(True) or not(False)')
-parser.add_argument('--PDB',           default=True,                type=bool,  
+parser.add_argument('--PDB',           default=False,                type=bool,  
                     help='do(True) pose-based data balance or not(False)')
 parser.add_argument('--RGB',           default=False,               type=bool,  
                     help='input rgb img(True) or gray img(False)')
@@ -27,7 +27,7 @@ parser.add_argument('--scale_ratio',   default=0.1,                type=float, h
 
 # devices
 parser.add_argument('--cuda',          default=True,                type=bool,  help='use cuda to train model')
-parser.add_argument('--gpu_id',        default='1',                 type=str,
+parser.add_argument('--gpu_id',        default='0',                 type=str,
                     help='gpu id, if have more, use 0,2,3 in this way')
 
 # learning parameters

@@ -166,43 +166,37 @@ def get_random_transform_param(split, bbox):
 
 def get_affine_matrix(crop_size, rotation, scaling):
     center = (crop_size / 2.0, crop_size / 2.0)
-    affine_mat = cv2.getRotationMatrix2D(center, rotation, scaling)
-    return affine_mat
+    affine_matrix = cv2.getRotationMatrix2D(center, rotation, scaling)
+    return affine_matrix
 
 
-def pic_normalize(pic):
+def pic_normalize(pic):  # for accerate, now support gray pic only
     pic = np.float32(pic)
     mean, std = cv2.meanStdDev(pic)
     pic_channel = 1 if len(pic.shape) == 2 else 3
     for channel in range(0, pic_channel):
         if std[channel][0] < 1e-6:
             std[channel][0] = 1
-    for channel in range(0, pic_channel):
-        for w in range(pic.shape[1]):
-            for h in range(pic.shape[0]):
-                if pic_channel == 1:
-                    pic[w][h] = (pic[w][h] - mean[channel][0]) / std[channel][0]
-                else:
-                    pic[w][h][channel] = (pic[w][h][channel] - mean[channel][0]) / std[channel][0]
+    pic = (pic - mean) / std;
     return pic
 
 
-def get_gt_coords(dataset, coord_x, coord_y, affine_mat):
+def get_gt_coords(dataset, affine_matrix, coord_x, coord_y):
     out = []
     for kp_index in range(dataset_kp_num[dataset]):
         out.append(
-            affine_mat[0][0] * coord_x[kp_index] +
-            affine_mat[0][1] * coord_y[kp_index] +
-            affine_mat[0][2])
+            affine_matrix[0][0] * coord_x[kp_index] +
+            affine_matrix[0][1] * coord_y[kp_index] +
+            affine_matrix[0][2])
         out.append(
-            affine_mat[1][0] * coord_x[kp_index] +
-            affine_mat[1][1] * coord_y[kp_index] +
-            affine_mat[1][2])
+            affine_matrix[1][0] * coord_x[kp_index] +
+            affine_matrix[1][1] * coord_y[kp_index] +
+            affine_matrix[1][2])
     out = np.array(np.float32(out))
     return out
 
 
-def get_gt_heatmap(dataset, gt_coords, watch_heatmap=0):
+def get_gt_heatmap(dataset, gt_coords):
     coord_x, coord_y, gt_heatmap = [], [], []
     for index in range(boundary_num):
         gt_heatmap.append(np.ones((64, 64)))
@@ -254,9 +248,9 @@ def get_gt_heatmap(dataset, gt_coords, watch_heatmap=0):
                 u_new = np.linspace(res[1].min(), res[1].max(), interp_points_num[k])
                 boundary_x[k], boundary_y[k] = splev(u_new, res[0], der=0)
     for index, k in enumerate(boundary_keys):
-        for i in range(len(boundary_x[k])):
+        for i in range(len(boundary_x[k]) - 1):
             cv2.line(gt_heatmap[index], (int(boundary_x[k][i]), int(boundary_y[k][i])),
-                     (int(boundary_x[k][i]), int(boundary_y[k][i])), 0)
+                     (int(boundary_x[k][i+1]), int(boundary_y[k][i+1])), 0)
         gt_heatmap[index] = np.uint8(gt_heatmap[index])
         gt_heatmap[index] = cv2.distanceTransform(gt_heatmap[index], cv2.DIST_L2, 5)
         gt_heatmap[index] = np.float32(gt_heatmap[index])
@@ -267,14 +261,6 @@ def get_gt_heatmap(dataset, gt_coords, watch_heatmap=0):
                 else:
                     gt_heatmap[index][h][w] = 0
     gt_heatmap = np.float32(np.array(gt_heatmap))
-    if watch_heatmap != 0:
-        heatmap_sum = gt_heatmap[0]
-        for index in range(boundary_num - 1):
-            heatmap_sum += gt_heatmap[index + 1]
-        cv2.imshow('heatmap_sum', heatmap_sum)
-        cv2.moveWindow('heatmap_sum', 0, 0)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
     return gt_heatmap
 
 
@@ -377,21 +363,19 @@ def getitem_from(dataset, split, annotation, eval_flag=0):
     pic_crop = cv2.warpAffine(pic_gray, crop_matrix, (args.crop_size, args.crop_size))
     if flip == 1:
         pic_crop = cv2.flip(pic_crop, 1)
-    affine_mat = get_affine_matrix(args.crop_size, rotation, scaling)
-    pic_affine = cv2.warpAffine(pic_crop, affine_mat, (args.crop_size, args.crop_size))
+    affine_matrix = get_affine_matrix(args.crop_size, rotation, scaling)
+    pic_affine = cv2.warpAffine(pic_crop, affine_matrix, (args.crop_size, args.crop_size))
+
     pic_affine = pic_normalize(pic_affine)
 
     # 该段将原始关键点坐标转化为裁剪后的图像上的坐标
     coord_x_after_crop, coord_y_after_crop = cropped_pic_kp(dataset, crop_matrix, coord_x, coord_y, flip=flip)
 
     # 该段将原始关键点坐标转化为仿射变换后的图像上的坐标
-    gt_keypoints = get_gt_coords(dataset, coord_x_after_crop, coord_y_after_crop, affine_mat)
+    gt_keypoints = get_gt_coords(dataset, affine_matrix, coord_x_after_crop, coord_y_after_crop)
 
-    # 该段根据生成的新的坐标点，将坐标转换为64*64大小图片上的坐标并绘制boundary热图
-    # 若在函数最后设置watch_heatmap=1，则显示热图(需要使用pycharm的science mode)
-    gt_heatmap = get_gt_heatmap(dataset, gt_keypoints, watch_heatmap=0)
-
-    # watch_pic_kp_xy(dataset, pic_crop, coord_x_after_crop, coord_y_after_crop)
+    # 该段根据生成的新的坐标点，将坐标转换为64*64大小图片上的坐标并根据此坐标绘制boundary热图
+    gt_heatmap = get_gt_heatmap(dataset, gt_keypoints)
 
     if eval_flag == 0:
         return pic_affine, gt_keypoints, gt_heatmap

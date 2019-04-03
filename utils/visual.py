@@ -6,6 +6,16 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
 
+def watch_dataload_heatmap(gt_heatmap):
+    heatmap_sum = gt_heatmap[0]
+    for index in range(boundary_num - 1):
+        heatmap_sum += gt_heatmap[index + 1]
+    cv2.imshow('heatmap_sum', heatmap_sum)
+    cv2.moveWindow('heatmap_sum', 0, 0)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 def watch_pic_kp(dataset, pic, kp):
     for kp_index in range(dataset_kp_num[dataset]):
         cv2.circle(pic,

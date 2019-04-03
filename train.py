@@ -175,7 +175,7 @@ def train_with_gt_heatmap(arg):
         if epoch in arg.step_values:
             optimizer_regressor.param_groups[0]['lr'] *= arg.gamma
 
-        for data in dataloader:
+        for data in tqdm.tqdm(dataloader):
             times_per_epoch += 1
             input_images, gt_keypoints, gt_heatmap = data
             input_images = input_images.unsqueeze(1)

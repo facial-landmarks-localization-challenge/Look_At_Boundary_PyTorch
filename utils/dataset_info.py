@@ -121,8 +121,8 @@ boundary_keys = ['chin', 'leb', 'reb', 'bon', 'breath', 'lue', 'lle', 'rue', 'rl
                  'usul', 'lsul', 'usll', 'lsll']
 boundary_num = 13
 
-interp_points_num = {'chin': 800, 'leb': 100, 'reb': 100, 'bon': 200,
-                     'breath': 300, 'lue': 100, 'lle': 100, 'rue': 100, 'rle': 100,
-                     'usul': 300, 'lsul': 300, 'usll': 300, 'lsll': 300}
+interp_points_num = {'chin': 120, 'leb': 32, 'reb': 32, 'bon': 32,
+                     'breath': 25, 'lue': 25, 'lle': 25, 'rue': 25, 'rle': 25,
+                     'usul': 32, 'lsul': 32, 'usll': 32, 'lsll': 32}
 
 dataset_numbins = {'WFLW': 13, 'JD': 13, '300W': 9, 'AFLW': 17}
