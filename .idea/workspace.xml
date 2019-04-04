@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="fece388f-5347-4534-9cb6-59ad496c1005" name="Default Changelist" comment="update spelling error">
       <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/args.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/args.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/dataload.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/dataload.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/utils/dataload.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="403">
-              <caret line="377" column="90" lean-forward="true" selection-start-line="377" selection-start-column="90" selection-end-line="377" selection-end-column="90" />
+            <state relative-caret-position="505">
+              <caret line="383" lean-forward="true" selection-start-line="383" selection-end-line="383" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
@@ -191,7 +187,7 @@
       <updated>1553946842473</updated>
       <workItem from="1553946844657" duration="5878000" />
       <workItem from="1554362314818" duration="4095000" />
-      <workItem from="1554367222571" duration="12461000" />
+      <workItem from="1554367222571" duration="12772000" />
     </task>
     <task id="LOCAL-00001" summary="update epoch saving and resume error">
       <created>1553947592516</created>
@@ -263,11 +259,18 @@
       <option name="project" value="LOCAL" />
       <updated>1554367348789</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="update spelling error">
+      <created>1554386207186</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1554386207186</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22434000" />
+    <option name="totallyTimeSpent" value="22745000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -486,8 +489,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/dataload.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="377" column="90" lean-forward="true" selection-start-line="377" selection-start-column="90" selection-end-line="377" selection-end-column="90" />
+        <state relative-caret-position="505">
+          <caret line="383" lean-forward="true" selection-start-line="383" selection-end-line="383" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
