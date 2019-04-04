@@ -122,6 +122,14 @@ def convert_img_to_gray(img):
         raise Exception("img shape wrong!\n")
 
 
+def further_transform(pic, bbox):
+    blur_flag = random.randint(0, 1)
+    if abs(bbox[2] - bbox[0]) < 120 or blur_flag == 0:
+        return pic
+    else:
+        return cv2.GaussianBlur(pic, (5, 5), 1)
+
+
 def cropped_pic_kp(dataset, crop_matrix, coord_x, coord_y, flip=0):
     temp_x, temp_y, coord_x_after_crop, coord_y_after_crop = [], [], [], []
     for kp_index in range(dataset_kp_num[dataset]):
@@ -359,8 +367,12 @@ def getitem_from(dataset, split, annotation, eval_flag=0):
                                  [args.crop_size - 1, args.crop_size - 1]])
     crop_matrix = cv2.getAffineTransform(position_before, position_after)
     pic_crop = cv2.warpAffine(pic_gray, crop_matrix, (args.crop_size, args.crop_size))
+
     if flip == 1:
         pic_crop = cv2.flip(pic_crop, 1)
+
+    pic_crop = further_transform(pic_crop, bbox)
+
     affine_matrix = get_affine_matrix(args.crop_size, rotation, scaling)
     pic_affine = cv2.warpAffine(pic_crop, affine_matrix, (args.crop_size, args.crop_size))
 
