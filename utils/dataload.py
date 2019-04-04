@@ -253,14 +253,12 @@ def get_gt_heatmap(dataset, gt_coords):
                      (int(boundary_x[k][i+1]), int(boundary_y[k][i+1])), 0)
         gt_heatmap[index] = np.uint8(gt_heatmap[index])
         gt_heatmap[index] = cv2.distanceTransform(gt_heatmap[index], cv2.DIST_L2, 5)
-        gt_heatmap[index] = np.float32(gt_heatmap[index])
-        for h in range(heatmap_size):
-            for w in range(heatmap_size):
-                if gt_heatmap[index][h][w] < 3.0:
-                    gt_heatmap[index][h][w] = np.exp(-gt_heatmap[index][h][w] * gt_heatmap[index][h][w] / 2)
-                else:
-                    gt_heatmap[index][h][w] = 0
-    gt_heatmap = np.float32(np.array(gt_heatmap))
+        gt_heatmap[index] = np.float32(np.array(gt_heatmap[index]))
+        gt_heatmap[index] = gt_heatmap[index].reshape(64*64)
+        (gt_heatmap[index])[(gt_heatmap[index]) < 3.0] = \
+            np.exp(-(gt_heatmap[index])[(gt_heatmap[index]) < 3.0] * (gt_heatmap[index])[(gt_heatmap[index]) < 3.0] / 2)
+        (gt_heatmap[index])[(gt_heatmap[index]) >= 3.0] = 0.
+        gt_heatmap[index] = gt_heatmap[index].reshape([64, 64])
     return gt_heatmap
 
 
