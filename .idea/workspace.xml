@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="fece388f-5347-4534-9cb6-59ad496c1005" name="Default Changelist" comment="update spelling error">
       <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,14 +17,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils/dataload.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="505">
-              <caret line="383" lean-forward="true" selection-start-line="383" selection-end-line="383" />
+            <state relative-caret-position="267">
+              <caret line="369" lean-forward="true" selection-start-line="369" selection-end-line="369" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="136">
+                <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -89,6 +102,7 @@
         <option value="$PROJECT_DIR$/models/models.py" />
         <option value="$PROJECT_DIR$/utils/dataload.py" />
         <option value="$PROJECT_DIR$/utils/args.py" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -187,7 +201,7 @@
       <updated>1553946842473</updated>
       <workItem from="1553946844657" duration="5878000" />
       <workItem from="1554362314818" duration="4095000" />
-      <workItem from="1554367222571" duration="12772000" />
+      <workItem from="1554367222571" duration="13116000" />
     </task>
     <task id="LOCAL-00001" summary="update epoch saving and resume error">
       <created>1553947592516</created>
@@ -266,11 +280,25 @@
       <option name="project" value="LOCAL" />
       <updated>1554386207186</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="update readme">
+      <created>1554386509068</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1554386509068</updated>
+    </task>
+    <task id="LOCAL-00013" summary="update spelling error">
+      <created>1554386734250</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1554386734250</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22745000" />
+    <option name="totallyTimeSpent" value="23089000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -285,12 +313,12 @@
     <frame x="57" y="25" width="1863" height="1055" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14749587" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14749587" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49972484" visible="true" weight="0.34341252" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49972484" visible="true" weight="0.34341252" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -337,6 +365,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update epoch saving and resume error" />
     <MESSAGE value="update pycharm setting" />
+    <MESSAGE value="update readme" />
     <MESSAGE value="update spelling error" />
     <option name="LAST_COMMIT_MESSAGE" value="update spelling error" />
   </component>
@@ -377,14 +406,6 @@
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor />
-          <second_editor />
         </state>
       </provider>
     </entry>
@@ -489,11 +510,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/utils/dataload.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="505">
-          <caret line="383" lean-forward="true" selection-start-line="383" selection-end-line="383" />
+        <state relative-caret-position="267">
+          <caret line="369" lean-forward="true" selection-start-line="369" selection-end-line="369" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="136">
+            <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
