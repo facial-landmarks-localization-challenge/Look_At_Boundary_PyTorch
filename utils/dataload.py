@@ -170,14 +170,14 @@ def get_affine_matrix(crop_size, rotation, scaling):
     return affine_matrix
 
 
-def pic_normalize(pic):  # for accerate, now support gray pic only
+def pic_normalize(pic):  # for accelerate, now support gray pic only
     pic = np.float32(pic)
     mean, std = cv2.meanStdDev(pic)
     pic_channel = 1 if len(pic.shape) == 2 else 3
     for channel in range(0, pic_channel):
         if std[channel][0] < 1e-6:
             std[channel][0] = 1
-    pic = (pic - mean) / std;
+    pic = (pic - mean) / std
     return pic
 
 
