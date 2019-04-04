@@ -73,5 +73,47 @@ def evaluate(arg):
     print('Average speed: {:.2f}FPS'.format(1./np.mean(np.array(time_records))))
 
 
+def evaluate_one_img(arg, img_route):
+    devices = torch.device('cuda:' + arg.gpu_id)
+
+    print('Loading network...')
+    estimator = Estimator(stacks=arg.hour_stack, msg_pass=arg.msg_pass)
+    regressor = Regressor(fuse_stages=arg.fuse_stage, output=2 * dataset_kp_num[arg.dataset])
+    estimator = load_weights(estimator, arg.save_folder + 'estimator_' + str(arg.test_epoch) + '.pth', devices)
+    regressor = load_weights(regressor, arg.save_folder + arg.dataset + '_regressor_' + str(arg.test_epoch) + '.pth',
+                             devices)
+    if arg.cuda:
+        estimator = estimator.cuda(device=devices)
+        regressor = regressor.cuda(device=devices)
+    estimator.eval()
+    regressor.eval()
+    print('Loading network done!\nStart testing...')
+
+    images = cv2.imread(img_route)
+    images = cv2.resize(images, (256, 256))
+
+    input_images = convert_img_to_gray(images)
+    input_images = torch.Tensor(input_images)
+    input_images = input_images.unsqueeze(0)
+    input_images = input_images.unsqueeze(0).cuda()
+    print(input_images.size())
+
+    with torch.no_grad():
+        pred_heatmaps = estimator(input_images)
+        pred_coords = regressor(input_images, pred_heatmaps[-1].detach()).detach().cpu()
+
+        pred_coords = pred_coords.squeeze().numpy()
+        for coord_index in range(dataset_kp_num[arg.dataset]):
+            cv2.circle(
+                images,
+                (int(pred_coords[2 * coord_index]), int(pred_coords[2 * coord_index + 1])),
+                2,
+                (0, 0, 255)
+            )
+        cv2.imshow('images', images)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+
 if __name__ == '__main__':
     evaluate(args)

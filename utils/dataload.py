@@ -186,7 +186,7 @@ def pic_normalize(pic):  # for accelerate, now support gray pic only
         if std[channel][0] < 1e-6:
             std[channel][0] = 1
     pic = (pic - mean) / std
-    return pic
+    return np.float32(pic)
 
 
 def get_gt_coords(dataset, affine_matrix, coord_x, coord_y):
@@ -371,7 +371,8 @@ def getitem_from(dataset, split, annotation, eval_flag=0):
     if flip == 1:
         pic_crop = cv2.flip(pic_crop, 1)
 
-    pic_crop = further_transform(pic_crop, bbox)
+    if args.split in ['train']:
+        pic_crop = further_transform(pic_crop, bbox)
 
     affine_matrix = get_affine_matrix(args.crop_size, rotation, scaling)
     pic_affine = cv2.warpAffine(pic_crop, affine_matrix, (args.crop_size, args.crop_size))
