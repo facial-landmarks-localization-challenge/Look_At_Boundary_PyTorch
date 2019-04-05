@@ -89,6 +89,7 @@ def evaluate_gthm_reg(arg):
           '# Normalize way:      ' + arg.norm_way + '\n' +
           '# Max threshold:      ' + str(arg.max_threshold) + '\n')
 
+    print('Evaluate with ground truth heatmap\n')
     print('Loading network...')
     regressor = Regressor(fuse_stages=arg.fuse_stage, output=2 * dataset_kp_num[arg.dataset])
     regressor = load_weights(regressor, arg.save_folder + arg.dataset + '_regressor_' + str(arg.test_epoch) + '.pth',
@@ -179,4 +180,4 @@ def evaluate_one_img(arg, img_route):
 
 
 if __name__ == '__main__':
-    evaluate_gthm_reg(args)
+    evaluate(args)

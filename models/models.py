@@ -416,8 +416,8 @@ class Estimator(nn.Module):
         heatmap_loss = []
         for stack in range(self.stacks):
             heatmap_loss.append(self.hm_loss(pred_heatmaps[stack], gt_heatmap))
-        heatmap_loss = torch.stack(heatmap_loss, dim=1)
-        heatmap_loss = torch.mean(heatmap_loss) / 2.0
+        heatmap_loss = torch.stack(heatmap_loss, dim=0)
+        heatmap_loss = torch.sum(heatmap_loss)
         return heatmap_loss
 
 

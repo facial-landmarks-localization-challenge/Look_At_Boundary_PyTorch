@@ -3,10 +3,10 @@ import argparse
 parser = argparse.ArgumentParser(description='LAB')
 
 # dataset
-parser.add_argument('--dataset_route', default='../../datasets',
+parser.add_argument('--dataset_route', default='/media/zhijun/DISK2/Champagne_Jin/facial_landmark/datasets',
                     type=str,   help='directory of all the facial landmark datasets')
-parser.add_argument('--dataset',       default='300W',              type=str,   help='dataset used')
-parser.add_argument('--split',         default='challenge_subset',             type=str,   help='the split of dataset')
+parser.add_argument('--dataset',       default='WFLW',              type=str,   help='dataset used')
+parser.add_argument('--split',         default='blur',             type=str,   help='the split of dataset')
 
 # dataloader
 parser.add_argument('--crop_size',     default=256,                 type=int,   help='network input img size')
@@ -65,7 +65,7 @@ parser.add_argument('--GAN',           default=True,                type=bool,  
 parser.add_argument('--fuse_stage',    default=4,                   type=int,   help='fuse stage of regressor')
 
 # test parameters
-parser.add_argument('--test_epoch',    default=2499,                type=int,   help='resume epoch for testing')
+parser.add_argument('--test_epoch',    default=199,                type=int,   help='resume epoch for testing')
 parser.add_argument('--max_threshold', default=0.1,                 type=float, help='resume epoch for testing')
 parser.add_argument('--norm_way',      default='inter_pupil',       type=str,
                     choices=['inter_pupil', 'inter_ocular', 'face_size'])
