@@ -124,7 +124,7 @@ def convert_img_to_gray(img):
 
 def further_transform(pic, bbox):
     blur_flag = random.randint(0, 1)
-    if abs(bbox[2] - bbox[0]) < 120 or blur_flag == 0:
+    if (args.split not in ['train']) or (abs(bbox[2] - bbox[0]) < 120) or (blur_flag == 0):
         return pic
     else:
         return cv2.GaussianBlur(pic, (5, 5), 1)
@@ -267,7 +267,7 @@ def get_gt_heatmap(dataset, gt_coords):
             np.exp(-(gt_heatmap[index])[(gt_heatmap[index]) < 3.0] * (gt_heatmap[index])[(gt_heatmap[index]) < 3.0] / 2)
         (gt_heatmap[index])[(gt_heatmap[index]) >= 3.0] = 0.
         gt_heatmap[index] = gt_heatmap[index].reshape([64, 64])
-    return gt_heatmap
+    return np.array(gt_heatmap)
 
 
 def getitem_from(dataset, split, annotation, eval_flag=0):
@@ -366,25 +366,23 @@ def getitem_from(dataset, split, annotation, eval_flag=0):
                                  [0, args.crop_size - 1],
                                  [args.crop_size - 1, args.crop_size - 1]])
     crop_matrix = cv2.getAffineTransform(position_before, position_after)
-    pic_crop = cv2.warpAffine(pic_gray, crop_matrix, (args.crop_size, args.crop_size))
-
-    if flip == 1:
-        pic_crop = cv2.flip(pic_crop, 1)
-
-    if args.split in ['train']:
-        pic_crop = further_transform(pic_crop, bbox)
-
     affine_matrix = get_affine_matrix(args.crop_size, rotation, scaling)
-    pic_affine = cv2.warpAffine(pic_crop, affine_matrix, (args.crop_size, args.crop_size))
 
+    # crop the pic with the bbox turbulence
+    pic_crop = cv2.warpAffine(pic_gray, crop_matrix, (args.crop_size, args.crop_size))
+    # flip the pic if need
+    pic_crop = cv2.flip(pic_crop, 1) if flip == 1 else pic_crop
+    # further transform the pic like Gaussian blur or adjust brightness/contrast ratio or shelter parts of the pic
+    pic_crop = further_transform(pic_crop, bbox)
+    # rotate and rescale the pic
+    pic_affine = cv2.warpAffine(pic_crop, affine_matrix, (args.crop_size, args.crop_size))
+    # normalize the pic
     pic_affine = pic_normalize(pic_affine)
 
     # 该段将原始关键点坐标转化为裁剪后的图像上的坐标
     coord_x_after_crop, coord_y_after_crop = cropped_pic_kp(dataset, crop_matrix, coord_x, coord_y, flip=flip)
-
     # 该段将原始关键点坐标转化为仿射变换后的图像上的坐标
     gt_keypoints = get_gt_coords(dataset, affine_matrix, coord_x_after_crop, coord_y_after_crop)
-
     # 该段根据生成的新的坐标点，将坐标转换为64*64大小图片上的坐标并根据此坐标绘制boundary热图
     gt_heatmap = get_gt_heatmap(dataset, gt_keypoints)
 
