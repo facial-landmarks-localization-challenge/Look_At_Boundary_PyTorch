@@ -96,7 +96,6 @@ def evaluate_one_img(arg, img_route):
     input_images = torch.Tensor(input_images)
     input_images = input_images.unsqueeze(0)
     input_images = input_images.unsqueeze(0).cuda()
-    print(input_images.size())
 
     with torch.no_grad():
         pred_heatmaps = estimator(input_images)
