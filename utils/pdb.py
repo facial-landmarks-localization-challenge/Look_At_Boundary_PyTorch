@@ -66,10 +66,10 @@ def pdb(dataset, allShapes, numBins):
     meanShape = np.mean(alignedShape, 1)
     meanShape = meanShape.repeat(len(alignedShape[0])).reshape(-1, len(alignedShape[0]))
     alignedShape = alignedShape - meanShape
-    pca = PCA(n_components=2) if dataset == 'AFLW' else PCA(n_components=1)
+    pca = PCA(n_components=2) if dataset in ['AFLW', 'COFW'] else PCA(n_components=1)
     posePara = pca.fit_transform(np.transpose(alignedShape))
     
-    absPosePara = np.abs(posePara[:, 1]) if dataset == 'AFLW' else np.abs(posePara)
+    absPosePara = np.abs(posePara[:, 1]) if dataset in ['AFLW', 'COFW'] else np.abs(posePara)
     maxPosePara = np.max(absPosePara)
     maxSampleInBins = np.max(np.histogram(absPosePara, numBins)[0])
     
@@ -87,12 +87,12 @@ def pdb(dataset, allShapes, numBins):
 
 if __name__ == '__main__':
     import cv2
-    from utils import get_annotations_list, dataset_kp_num, \
+    from utils import get_annotations_list, kp_num, \
         dataset_route, crop_size, cropped_pic_kp
     numBin = 17
     use_dataset, use_split = 'AFLW', 'train'
     annotations = get_annotations_list(use_dataset, use_split)
-    kp_num, length = dataset_kp_num[use_dataset], len(annotations)
+    kp_num, length = kp_num[use_dataset], len(annotations)
     allShape = np.zeros((2*kp_num, length))
     for line_index, line in enumerate(annotations):
         # pic = cv2.imread(dataset_route[use_dataset] + line[-1])

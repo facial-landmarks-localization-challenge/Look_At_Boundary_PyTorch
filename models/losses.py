@@ -24,11 +24,6 @@ class WingLoss(nn.Module):
         self.weight = weight
 
     def forward(self, predictions, targets):
-        """
-        :param predictions: 网络输出，预测坐标，一个形状为[batch, N, 2]的张量 或 [batch, N×2]的张量
-        :param targets: 目标，真实坐标，一个形状为[batch, N, 2]的张量 或 [batch, N×2]的张量
-        :return: wing loss，标量
-        """
         x = predictions - targets
         if self.weight is not None:
             x = x * self.weight

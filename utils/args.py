@@ -3,83 +3,65 @@ import argparse
 parser = argparse.ArgumentParser(description='LAB')
 
 # dataset
-parser.add_argument('--dataset_route', default='/media/zhijun/DISK2/Champagne_Jin/facial_landmark/datasets',
-                    type=str,   help='directory of all the facial landmark datasets')
-parser.add_argument('--dataset',       default='300W',              type=str,   help='dataset used')
-parser.add_argument('--split',         default='challenge_subset',             type=str,   help='the split of dataset')
+parser.add_argument('--dataset_route', default='/home/jin/new_datasets/', type=str)
+parser.add_argument('--dataset',       default='300W',              type=str)
+parser.add_argument('--split',         default='train',             type=str)
 
 # dataloader
-parser.add_argument('--crop_size',     default=256,                 type=int,   help='network input img size')
-parser.add_argument('--batch_size',    default=8,                   type=int,   help='batch size')
-parser.add_argument('--workers',       default=8,                   type=int,   
-                    help='number of workers used in dataload')
-parser.add_argument('--shuffle',       default=True,                type=bool,  
-                    help='dataloading shuffle(True) or not(False)')
-parser.add_argument('--PDB',           default=False,                type=bool,  
-                    help='do(True) pose-based data balance or not(False)')
-parser.add_argument('--RGB',           default=False,               type=bool,  
-                    help='input rgb img(True) or gray img(False)')
-parser.add_argument('--trans_ratio',   default=0.1,                 type=float, 
-                    help='data augment translation ratio of the bbox')
-parser.add_argument('--rotate_limit',  default=20.,                 type=float,
-                    help='data augment rotation angle limitation')
-parser.add_argument('--scale_ratio',   default=0.1,                type=float, help='data augment rescale +/- ratio')
+parser.add_argument('--crop_size',     default=256,                 type=int)
+parser.add_argument('--batch_size',    default=4,                   type=int)
+parser.add_argument('--workers',       default=8,                   type=int)
+parser.add_argument('--shuffle',       default=True,                type=bool)
+parser.add_argument('--PDB',           default=False,                type=bool)
+parser.add_argument('--RGB',           default=False,                type=bool)
+parser.add_argument('--trans_ratio',   default=0.1,                 type=float)
+parser.add_argument('--rotate_limit',  default=20.,                 type=float)
+parser.add_argument('--scale_ratio',   default=0.1,                 type=float)
 
 # devices
-parser.add_argument('--cuda',          default=True,                type=bool,  help='use cuda to train model')
-parser.add_argument('--gpu_id',        default='0',                 type=str,
-                    help='gpu id, if have more, use 0,2,3 in this way')
+parser.add_argument('--cuda',          default=True,                type=bool)
+parser.add_argument('--gpu_id',        default='0',                 type=str)
 
 # learning parameters
-parser.add_argument('--momentum',      default=0.9,                 type=float, help='momentum')
-parser.add_argument('--weight_decay',  default=5e-4,                type=float, help='Weight decay for SGD')
-parser.add_argument('--lr',            default=2e-5,                type=float, help='initial learning rate')
-parser.add_argument('--gamma',         default=0.2,                 type=float, help='Gamma update for SGD')
-parser.add_argument('--step_values',   default=[1000, 1500],          type=list,  help='lr update epoch list')
-parser.add_argument('--max_epoch',     default=2000,                 type=int,   help='max epoch for training')
+parser.add_argument('--momentum',      default=0.9,                 type=float)
+parser.add_argument('--weight_decay',  default=5e-4,                type=float)
+parser.add_argument('--lr',            default=2e-5,                type=float)
+parser.add_argument('--gamma',         default=0.2,                 type=float)
+parser.add_argument('--step_values',   default=[1000, 1500],        type=list)
+parser.add_argument('--max_epoch',     default=2000,                type=int)
 
-# losses
-parser.add_argument('--loss_type',     default='wingloss',    type=str,   choices=['L1', 'L2', 'smoothL1', 'wingloss'])
-parser.add_argument('--wingloss_w',    default=10,                  type=int,   help='param w for wingloss')
-parser.add_argument('--wingloss_e',    default=2,                   type=int,   help='param epsilon for wingloss')
+# losses setting
+parser.add_argument('--loss_type',     default='smoothL1',          type=str,
+                    choices=['L1', 'L2', 'smoothL1', 'wingloss'])
+parser.add_argument('--wingloss_w',    default=10,                  type=int)
+parser.add_argument('--wingloss_e',    default=2,                   type=int)
 
-# special training param
-parser.add_argument('--gthm_regress', default=True, type=bool, help='training with ground truth heatmap')
+# resume training parameters
+parser.add_argument('--resume_epoch',  default=0,                   type=int)
+parser.add_argument('--resume_folder', default='./weights/ckpts/',  type=str)
 
-# resume parameters
-parser.add_argument('--resume_epoch',  default=0,                type=int,   help='resume epoch for training')
-parser.add_argument('--resume_folder', default='./weights/ckpts/',  type=str,   help='directory to load models')
-parser.add_argument('--regress_only',  default=False,               type=bool,
-                    help='only fine tune regressor(True) or not(False) by using pre-trained estimator')
-
-# net saving parameters
-parser.add_argument('--save_folder',   default='./weights/',        type=str,   help='directory to save models')
-parser.add_argument('--save_interval', default=100,                 type=int,   help='net saving interval')
+# model saving parameters
+parser.add_argument('--save_folder',   default='./weights/',        type=str)
+parser.add_argument('--save_interval', default=100,                 type=int)
 
 # model setting
-parser.add_argument('--hour_stack',    default=4,                   type=int,
-                    help='stacks of estimator hourglass network')
-parser.add_argument('--msg_pass',      default=True,                type=bool,
-                    help='use msg passing(True) or not(False)')
-parser.add_argument('--GAN',           default=True,                type=bool,  help='use GAN(True) or not(False)')
-parser.add_argument('--fuse_stage',    default=4,                   type=int,   help='fuse stage of regressor')
+parser.add_argument('--hour_stack',    default=4,                   type=int)
+parser.add_argument('--msg_pass',      default=True,                type=bool)
+parser.add_argument('--GAN',           default=True,                type=bool)
+parser.add_argument('--fuse_stage',    default=4,                   type=int)
+parser.add_argument('--sigma',         default=1.0,                 type=float)
+parser.add_argument('--theta',         default=1.5,                 type=float)
+parser.add_argument('--delta',         default=0.8,                 type=float)
 
-# test parameters
-parser.add_argument('--test_epoch',    default=1899,                type=int,   help='resume epoch for testing')
-parser.add_argument('--max_threshold', default=0.1,                 type=float, help='resume epoch for testing')
-parser.add_argument('--norm_way',      default='inter_pupil',       type=str,
+# evaluate parameters
+parser.add_argument('--eval_epoch',    default=900,                 type=int)
+parser.add_argument('--max_threshold', default=0.1,                 type=float)
+parser.add_argument('--norm_way',      default='inter_ocular',      type=str,
                     choices=['inter_pupil', 'inter_ocular', 'face_size'])
-parser.add_argument('--eval_watch',    default=False,               type=bool,
-                    help='use eval_heatmap/points(True) or not')
-parser.add_argument('--save_only',     default=True,                type=bool,
-                    help='by eval_watch, without watch, just save pics')
-parser.add_argument('--error_thresh',  default=0.043,               type=float,
-                    help='the eval_heatmap/points threshold')
+parser.add_argument('--eval_visual',   default=False,               type=bool)
+parser.add_argument('--save_img',      default=False,                type=bool)
 
 args = parser.parse_args()
-
-if args.regress_only:
-    assert args.GAN is False
 
 assert args.resume_epoch < args.step_values[0]
 assert args.resume_epoch < args.max_epoch
