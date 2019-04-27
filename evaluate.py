@@ -60,7 +60,7 @@ def evaluate(arg):
                 error_normalize_factor
             )
 
-            if arg.eval_visual:  # and error_rate_i < arg.error_thresh:
+            if arg.eval_visual:
                 # eval_heatmap(arg, pred_heatmaps[-1], img_name, bbox, save_only=arg.save_only)
                 # eval_points(arg, pred_coords, img_name, bbox, save_only=arg.save_only)
                 eval_gt_pred_points(arg, gt_coords_xy, pred_coords, img_name, bbox, save_img=arg.save_img)
