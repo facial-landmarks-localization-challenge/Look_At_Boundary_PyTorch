@@ -141,4 +141,4 @@ def calc_auc(dataset, split, error_rate, max_threshold):
     accuracys = np.zeros(threshold.shape)
     for i in range(threshold.size):
         accuracys[i] = np.sum(error_rate < threshold[i]) * 1.0 / dataset_size[dataset][split]
-    return auc(threshold, accuracys) / max_threshold
+    return auc(threshold, accuracys) / max_threshold, accuracys

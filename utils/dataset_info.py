@@ -41,7 +41,8 @@ dataset_size = {
         'common_subset':    554,
         'challenge_subset': 135,
         'fullset':          689,
-        '300W_testset':     600
+        '300W_testset':     600,
+        'COFW68':           507  # 该数据集用于300W数据集上训练模型的测试
     },
     'AFLW': {
         'train':            20000,
@@ -50,8 +51,7 @@ dataset_size = {
     },
     'COFW': {
         'train':            1345,
-        'test':             507,
-        'test68':           507  # 该数据集用于300W数据集上训练模型的测试
+        'test':             507
     },
     'WFLW': {
         'train':            7500,

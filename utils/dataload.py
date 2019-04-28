@@ -113,8 +113,7 @@ def get_gt_coords(dataset, affine_matrix, coord_x, coord_y):
     return np.array(np.float32(out))
 
 
-def get_gt_heatmap(dataset, split, gt_coords):
-    dataset = '300W' if dataset == 'COFW' and split == 'test68' else dataset
+def get_gt_heatmap(dataset, gt_coords):
     coord_x, coord_y, gt_heatmap = [], [], []
     for index in range(boundary_num):
         gt_heatmap.append(np.ones((64, 64)))
@@ -183,7 +182,6 @@ def get_gt_heatmap(dataset, split, gt_coords):
 def get_item_from(dataset, split, annotation):
     pic = cv2.imread(dataset_route[dataset]+annotation[-1])
     pic = convert_img_to_gray(pic) if not args.RGB else pic
-    dataset = '300W' if dataset == 'COFW' and split == 'test68' else dataset
     coord_x = list(map(float, annotation[:2*kp_num[dataset]:2]))
     coord_y = list(map(float, annotation[1:2*kp_num[dataset]:2]))
     coord_xy = np.array(np.float32(list(map(float, annotation[:2*kp_num[dataset]]))))
@@ -210,6 +208,6 @@ def get_item_from(dataset, split, annotation):
     coord_x_cropped, coord_y_cropped = get_cropped_coords(dataset, crop_matrix, coord_x, coord_y, flip=flip)
     gt_coords_xy = get_gt_coords(dataset, affine_matrix, coord_x_cropped, coord_y_cropped)
 
-    gt_heatmap = get_gt_heatmap(dataset, split, gt_coords_xy)
+    gt_heatmap = get_gt_heatmap(dataset, gt_coords_xy)
 
     return pic_affine, gt_coords_xy, gt_heatmap, coord_xy, bbox, annotation[-1]

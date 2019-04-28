@@ -41,6 +41,7 @@ def evaluate(arg):
             start = time.time()
 
             input_images, gt_coords_xy, gt_heatmap, coords_xy, bbox, img_name = data
+            gt_coords_xy = gt_coords_xy.squeeze().numpy()
             bbox = bbox.squeeze().numpy()
             error_normalize_factor = calc_normalize_factor(arg.dataset, coords_xy.numpy(), arg.norm_way) \
                 if arg.norm_way in ['inter_pupil', 'inter_ocular'] else (bbox[2] - bbox[0])
@@ -61,14 +62,13 @@ def evaluate(arg):
             )
 
             if arg.eval_visual:
-                # eval_heatmap(arg, pred_heatmaps[-1], img_name, bbox, save_only=arg.save_only)
-                # eval_points(arg, pred_coords, img_name, bbox, save_only=arg.save_only)
-                eval_gt_pred_points(arg, gt_coords_xy, pred_coords, img_name, bbox, save_img=arg.save_img)
+                eval_heatmap(arg, pred_heatmaps[-1], img_name, bbox, save_img=arg.save_img)
+                eval_pred_points(arg, pred_coords, img_name, bbox, save_img=arg.save_img)
 
             failure_count = failure_count + 1 if error_rate_i > max_threshold else failure_count
             error_rate.append(error_rate_i)
 
-    area_under_curve = calc_auc(arg.dataset, arg.split, error_rate, max_threshold)
+    area_under_curve, auc_record = calc_auc(arg.dataset, arg.split, error_rate, max_threshold)
     error_rate = sum(error_rate) / dataset_size[arg.dataset][arg.split] * 100
     failure_rate = failure_count / dataset_size[arg.dataset][arg.split] * 100
 
@@ -129,13 +129,12 @@ def evaluate_with_gt_heatmap(arg):
             )
 
             if arg.eval_visual:
-                eval_heatmap(arg, pred_heatmaps[-1], img_name, bbox, save_img=arg.save_img)
-                eval_points(arg, pred_coords, img_name, bbox, save_img=arg.save_img)
+                eval_gt_pred_points(arg, gt_coords_xy, pred_coords, img_name, bbox, save_img=arg.save_img)
 
             failure_count = failure_count + 1 if error_rate_i > max_threshold else failure_count
             error_rate.append(error_rate_i)
 
-    area_under_curve = calc_auc(arg.dataset, arg.split, error_rate, max_threshold)
+    area_under_curve, auc_record = calc_auc(arg.dataset, arg.split, error_rate, max_threshold)
     error_rate = sum(error_rate) / dataset_size[arg.dataset][arg.split] * 100
     failure_rate = failure_count / dataset_size[arg.dataset][arg.split] * 100
 
@@ -145,4 +144,4 @@ def evaluate_with_gt_heatmap(arg):
 
 
 if __name__ == '__main__':
-    evaluate_with_gt_heatmap(args)
+    evaluate(args)
